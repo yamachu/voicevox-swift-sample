@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0376743B2D36D8AB000A7C06 /* onnxruntime.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376743A2D36D8AB000A7C06 /* onnxruntime.xcframework */; };
+		0376743C2D36D8AB000A7C06 /* onnxruntime.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0376743A2D36D8AB000A7C06 /* onnxruntime.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		03CB5D5F2D36C37700118DD0 /* voicevox_core.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03CB5D5E2D36C37700118DD0 /* voicevox_core.xcframework */; };
 		03CB5D602D36C37700118DD0 /* voicevox_core.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 03CB5D5E2D36C37700118DD0 /* voicevox_core.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -19,6 +21,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				03CB5D602D36C37700118DD0 /* voicevox_core.xcframework in Embed Frameworks */,
+				0376743C2D36D8AB000A7C06 /* onnxruntime.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -26,6 +29,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0376743A2D36D8AB000A7C06 /* onnxruntime.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = onnxruntime.xcframework; path = native/onnxruntime.xcframework; sourceTree = "<group>"; };
 		03CB5D1C2D36C04A00118DD0 /* voicevox-swift-sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "voicevox-swift-sample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		03CB5D5E2D36C37700118DD0 /* voicevox_core.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = voicevox_core.xcframework; path = native/voicevox_core.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -44,6 +48,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03CB5D5F2D36C37700118DD0 /* voicevox_core.xcframework in Frameworks */,
+				0376743B2D36D8AB000A7C06 /* onnxruntime.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +75,7 @@
 		03CB5D5A2D36C36B00118DD0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0376743A2D36D8AB000A7C06 /* onnxruntime.xcframework */,
 				03CB5D5E2D36C37700118DD0 /* voicevox_core.xcframework */,
 			);
 			name = Frameworks;
