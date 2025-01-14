@@ -6,14 +6,12 @@
 //
 
 import SwiftUI
+import VoicevoxCore
 
 struct ContentView: View {
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Text(String (cString: VoicevoxCore.voicevox_get_version()))
         }
         .padding()
     }
