@@ -8,12 +8,15 @@
 import SwiftUI
 import VoicevoxCore
 
-struct ContentView: View {
-    var body: some View {
+public struct ContentView: View {
+    public var body: some View {
         VStack {
-            Text(String (cString: VoicevoxCore.voicevox_get_version()))
+           Text(String (cString: VoicevoxCore.voicevox_get_version()))
         }
         .padding()
+    }
+
+    public init() {
     }
 }
 
