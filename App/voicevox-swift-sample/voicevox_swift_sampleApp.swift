@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppCore
 
 @main
 struct voicevox_swift_sampleApp: App {
