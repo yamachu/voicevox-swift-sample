@@ -7,10 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0376743B2D36D8AB000A7C06 /* onnxruntime.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376743A2D36D8AB000A7C06 /* onnxruntime.xcframework */; };
-		0376743C2D36D8AB000A7C06 /* onnxruntime.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0376743A2D36D8AB000A7C06 /* onnxruntime.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		03CB5D5F2D36C37700118DD0 /* voicevox_core.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03CB5D5E2D36C37700118DD0 /* voicevox_core.xcframework */; };
-		03CB5D602D36C37700118DD0 /* voicevox_core.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 03CB5D5E2D36C37700118DD0 /* voicevox_core.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		033C94E12D40015A00A06377 /* AppCore in Frameworks */ = {isa = PBXBuildFile; productRef = 033C94E02D40015A00A06377 /* AppCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -20,8 +17,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				03CB5D602D36C37700118DD0 /* voicevox_core.xcframework in Embed Frameworks */,
-				0376743C2D36D8AB000A7C06 /* onnxruntime.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -29,9 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0376743A2D36D8AB000A7C06 /* onnxruntime.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = onnxruntime.xcframework; path = native/onnxruntime.xcframework; sourceTree = "<group>"; };
 		03CB5D1C2D36C04A00118DD0 /* voicevox-swift-sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "voicevox-swift-sample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		03CB5D5E2D36C37700118DD0 /* voicevox_core.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = voicevox_core.xcframework; path = native/voicevox_core.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -47,8 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03CB5D5F2D36C37700118DD0 /* voicevox_core.xcframework in Frameworks */,
-				0376743B2D36D8AB000A7C06 /* onnxruntime.xcframework in Frameworks */,
+				033C94E12D40015A00A06377 /* AppCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,8 +67,6 @@
 		03CB5D5A2D36C36B00118DD0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0376743A2D36D8AB000A7C06 /* onnxruntime.xcframework */,
-				03CB5D5E2D36C37700118DD0 /* voicevox_core.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -102,6 +92,7 @@
 			);
 			name = "voicevox-swift-sample";
 			packageProductDependencies = (
+				033C94E02D40015A00A06377 /* AppCore */,
 			);
 			productName = "voicevox-swift-sample";
 			productReference = 03CB5D1C2D36C04A00118DD0 /* voicevox-swift-sample.app */;
@@ -131,6 +122,9 @@
 			);
 			mainGroup = 03CB5D132D36C04900118DD0;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				033C94DF2D40015A00A06377 /* XCLocalSwiftPackageReference "../../voicevox-swift-sample" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 03CB5D1D2D36C04A00118DD0 /* Products */;
 			projectDirPath = "";
@@ -289,7 +283,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"voicevox-swift-sample/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5KWM3SSJ42;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -318,7 +312,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"voicevox-swift-sample/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5KWM3SSJ42;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -361,6 +355,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		033C94DF2D40015A00A06377 /* XCLocalSwiftPackageReference "../../voicevox-swift-sample" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../voicevox-swift-sample";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		033C94E02D40015A00A06377 /* AppCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 03CB5D142D36C04900118DD0 /* Project object */;
 }
