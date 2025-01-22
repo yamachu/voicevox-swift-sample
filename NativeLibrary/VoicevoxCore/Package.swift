@@ -4,35 +4,23 @@
 import PackageDescription
 
 let package = Package(
-    name: "AppCore",
+    name: "VoicevoxCore",
     platforms: [
         .iOS(.v15),
         .macOS(.v15),
-        .macCatalyst(.v15),
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "AppCore",
-            targets: ["AppCore"]),
-    ],
-    dependencies: [
-        .package(path: String("NativeLibrary/VoicevoxCore")),
-        .package(path: String("NativeLibrary/Onnxruntime")),
+            name: "VoicevoxCore",
+            targets: ["VoicevoxCore"]),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "AppCore",
-            dependencies: [
-                "VoicevoxCore",
-                "Onnxruntime"
-            ]
-        ),
-        .testTarget(
-            name: "AppCoreTests",
-            dependencies: ["AppCore"]
+        .binaryTarget(
+            name: "VoicevoxCore",
+            path: "../../native/fat_voicevox_core.xcframework"
         ),
     ]
 )
