@@ -28,6 +28,9 @@ let package = Package(
             dependencies: [
                 "VoicevoxCore",
                 "VoicevoxOnnxruntime"
+            ],
+            resources: [
+                .process("Resources/models.json")
             ]
         ),
         .testTarget(
