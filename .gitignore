@@ -2,3 +2,6 @@ native/*
 !native/.gitkeep
 xcuserdata
 .build
+
+# from package
+FrameworkTemplate/voicevox_core.framework/Headers/voicevox_core.h
