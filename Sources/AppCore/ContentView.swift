@@ -6,12 +6,12 @@
 //
 
 import SwiftUI
-import VoicevoxCore
+import voicevox_core
 
 public struct ContentView: View {
     public var body: some View {
         VStack {
-           Text(String (cString: VoicevoxCore.voicevox_get_version()))
+            Text(String(cString: voicevox_get_version()))
         }
         .padding()
     }
