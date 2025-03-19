@@ -18,7 +18,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: String("NativeLibrary/VoicevoxCore")),
-        .package(path: String("NativeLibrary/Onnxruntime")),
+        .package(path: String("NativeLibrary/VoicevoxOnnxruntime")),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -27,7 +27,7 @@ let package = Package(
             name: "AppCore",
             dependencies: [
                 "VoicevoxCore",
-                "Onnxruntime"
+                "VoicevoxOnnxruntime"
             ]
         ),
         .testTarget(
