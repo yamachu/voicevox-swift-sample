@@ -1,0 +1,24 @@
+{
+  "originHash" : "dd52e30f64f7f8fd427919e89dd6ec5b21b2f993379690e1eac4a8e3619c4a9a",
+  "pins" : [
+    {
+      "identity" : "datacompression",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mw99/DataCompression.git",
+      "state" : {
+        "revision" : "5ab15951321b08b74511601cbd0497667649d70b",
+        "version" : "3.8.0"
+      }
+    },
+    {
+      "identity" : "tarscape",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kayembi/Tarscape.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "ce026160f8f009275afd1cc8175a199aa3ec0072"
+      }
+    }
+  ],
+  "version" : 3
+}

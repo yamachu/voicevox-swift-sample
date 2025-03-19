@@ -19,6 +19,8 @@ let package = Package(
     dependencies: [
         .package(path: String("NativeLibrary/VoicevoxCore")),
         .package(path: String("NativeLibrary/VoicevoxOnnxruntime")),
+        .package(url: "https://github.com/mw99/DataCompression.git", from: "3.8.0"),
+        .package(url: "https://github.com/kayembi/Tarscape.git", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -27,7 +29,9 @@ let package = Package(
             name: "AppCore",
             dependencies: [
                 "VoicevoxCore",
-                "VoicevoxOnnxruntime"
+                "VoicevoxOnnxruntime",
+                "DataCompression",
+                "Tarscape"
             ],
             resources: [
                 .process("Resources/models.json")
