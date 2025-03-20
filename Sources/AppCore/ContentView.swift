@@ -18,6 +18,8 @@ public struct ContentView: View {
             DictionaryDownloaderView()
                 .padding()
                 .environmentObject(voicevoxEnvironmentObject)
+            VoiceModelsView()
+                .environmentObject(voicevoxEnvironmentObject)
         }
         .padding()
     }
