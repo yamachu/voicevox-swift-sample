@@ -20,7 +20,7 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         .binaryTarget(
             name: "VoicevoxCore",
-            path: "../../native/fat_voicevox_core.xcframework"
+            path: "../../native/voicevox_core.xcframework"
         ),
     ]
 )

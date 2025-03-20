@@ -1,72 +1,83 @@
-.PHONY: setup patch/voicevox_core
-setup: native/fat_onnxruntime.xcframework native/fat_voicevox_core.xcframework
+.PHONY: setup
+setup: native/voicevox_core.xcframework native/voicevox_onnxruntime.xcframework
 
-native/voicevox_core-ios-xcframework-cpu-0.15.0-preview.16.zip:
-	curl https://github.com/VOICEVOX/voicevox_core/releases/download/0.15.0-preview.16/voicevox_core-ios-xcframework-cpu-0.15.0-preview.16.zip -L -o $@
+ARCH:=$(shell uname -m | grep -q 'x86_64' && echo "x64" || echo "arm64")
+DOWNLOADER:=native/bin/downloader
 
-native/voicevox_core-osx-arm64-cpu-0.15.0-preview.16.zip:
-	curl https://github.com/VOICEVOX/voicevox_core/releases/download/0.15.0-preview.16/voicevox_core-osx-arm64-cpu-0.15.0-preview.16.zip -L -o $@
+CORE_TAG=0.16.0-preview.1
+ONNXRUNTIME_TAG=voicevox_onnxruntime-1.17.3
 
-native/voicevox_core-osx-x64-cpu-0.15.0-preview.16.zip:
-	curl https://github.com/VOICEVOX/voicevox_core/releases/download/0.15.0-preview.16/voicevox_core-osx-x64-cpu-0.15.0-preview.16.zip -L -o $@
+$(DOWNLOADER):
+	mkdir -p $(dir $@)
+	curl https://github.com/VOICEVOX/voicevox_core/releases/download/$(CORE_TAG)/download-osx-$(ARCH) -L -o $@
+	chmod +x $@
 
-native/voicevox_core.xcframework: native/voicevox_core-ios-xcframework-cpu-0.15.0-preview.16.zip
-	unzip -o $< -d native
+native/tmp/voicevox_core-ios-xcframework.zip:
+	mkdir -p $(dir $@)
+	curl https://github.com/VOICEVOX/voicevox_core/releases/download/$(CORE_TAG)/voicevox_core-ios-xcframework-cpu-$(CORE_TAG).zip -L -o $@
 
-native/voicevox_core-osx-arm64-cpu-0.15.0-preview.16: native/voicevox_core-osx-arm64-cpu-0.15.0-preview.16.zip
-	unzip -o $< -d native
+native/raw/osx-arm64: $(DOWNLOADER)
+	$(DOWNLOADER) --exclude additional-libraries models dict --cpu-arch arm64 --os osx --c-api-version $(CORE_TAG) --onnxruntime-version $(ONNXRUNTIME_TAG) -o $@
 
-native/voicevox_core-osx-x64-cpu-0.15.0-preview.16: native/voicevox_core-osx-x64-cpu-0.15.0-preview.16.zip
-	unzip -o $< -d native
+native/raw/osx-x64: $(DOWNLOADER)
+	$(DOWNLOADER) --exclude additional-libraries models dict --cpu-arch x64 --os osx --c-api-version $(CORE_TAG) --onnxruntime-version $(ONNXRUNTIME_TAG) -o $@
 
-native/voicevox_core-osx:
-	mkdir -p $@
-
-native/voicevox_core-osx/libvoicevox_core.dylib: native/voicevox_core-osx native/voicevox_core-osx-arm64-cpu-0.15.0-preview.16 native/voicevox_core-osx-x64-cpu-0.15.0-preview.16
+native/tmp/osx-arm64_x86_64/voicevox_core: native/raw/osx-arm64 native/raw/osx-x64
+	mkdir -p $(dir $@)
 	lipo -create \
-		native/voicevox_core-osx-arm64-cpu-0.15.0-preview.16/libvoicevox_core.dylib \
-		native/voicevox_core-osx-x64-cpu-0.15.0-preview.16/libvoicevox_core.dylib \
+		native/raw/osx-arm64/c_api/lib/libvoicevox_core.dylib \
+		native/raw/osx-x64/c_api/lib/libvoicevox_core.dylib \
 		-output $@
+	install_name_tool -id "@rpath/voicevox_core.framework/voicevox_core" $@
+	install_name_tool -id "@rpath/voicevox_core.framework/voicevox_core" $@
 
-native/voicevox_core-osx/Headers: native/voicevox_core.xcframework
-	cp -r $</ios-arm64/Headers $@
+native/raw/voicevox_core.xcframework: native/tmp/voicevox_core-ios-xcframework.zip
+	unzip -o $< -d native/raw
 
-native/fat_voicevox_core.xcframework: native/voicevox_core-osx/libvoicevox_core.dylib native/voicevox_core-osx/Headers native/voicevox_core.xcframework patch/voicevox_core
+FrameworkTemplate/voicevox_core.framework/Headers/voicevox_core.h: native/raw/osx-arm64
+	mkdir -p $(dir $@)
+	cp -r $</c_api/include/voicevox_core.h $@
+
+native/tmp/osx/voicevox_core.framework: FrameworkTemplate/voicevox_core.framework/Headers/voicevox_core.h native/tmp/osx-arm64_x86_64/voicevox_core
+	mkdir -p $(dir $@)
+	cp -r FrameworkTemplate/voicevox_core.framework $(dir $@)
+	cp native/tmp/osx-arm64_x86_64/voicevox_core $@/voicevox_core
+
+native/voicevox_core.xcframework: native/tmp/osx/voicevox_core.framework native/raw/voicevox_core.xcframework
 	xcodebuild -create-xcframework \
-		-library native/voicevox_core-osx/libvoicevox_core.dylib \
-		-headers native/voicevox_core-osx/Headers \
-		-library native/voicevox_core.xcframework/ios-arm64/libvoicevox_core.dylib \
-		-headers native/voicevox_core.xcframework/ios-arm64/Headers \
-		-library native/voicevox_core.xcframework/ios-arm64_x86_64-simulator/libvoicevox_core.dylib \
-		-headers native/voicevox_core.xcframework/ios-arm64_x86_64-simulator/Headers \
+		-framework native/raw/voicevox_core.xcframework/ios-arm64/voicevox_core.framework \
+		-framework native/raw/voicevox_core.xcframework/ios-arm64_x86_64-simulator/voicevox_core.framework \
+		-framework native/tmp/osx/voicevox_core.framework \
 		-output $@
 
-native/onnxruntime-ios-xcframework-1.14.1.zip:
-	curl https://github.com/VOICEVOX/onnxruntime-builder/releases/download/1.14.1/onnxruntime-ios-xcframework-1.14.1.zip -L -o $@
+# 
 
-native/onnxruntime.xcframework: native/onnxruntime-ios-xcframework-1.14.1.zip
-	unzip -o $< -d native
+native/tmp/voicevox_onnxruntime-ios-xcframework.zip:
+	mkdir -p $(dir $@)
+	curl https://github.com/VOICEVOX/onnxruntime-builder/releases/download/$(ONNXRUNTIME_TAG)/voicevox_onnxruntime-ios-xcframework-1.17.3.zip -L -o $@
 
-native/onnxruntime-osx:
-	mkdir -p $@
-
-native/onnxruntime-osx/libonnxruntime.1.14.0.dylib: native/onnxruntime-osx native/voicevox_core-osx-arm64-cpu-0.15.0-preview.16 native/voicevox_core-osx-x64-cpu-0.15.0-preview.16
+native/tmp/osx-arm64_x86_64/voicevox_onnxruntime: native/raw/osx-arm64 native/raw/osx-x64
+	mkdir -p $(dir $@)
 	lipo -create \
-		native/voicevox_core-osx-arm64-cpu-0.15.0-preview.16/libonnxruntime.1.14.0.dylib \
-		native/voicevox_core-osx-x64-cpu-0.15.0-preview.16/libonnxruntime.1.14.0.dylib \
+		native/raw/osx-arm64/onnxruntime/lib/libvoicevox_onnxruntime.1.17.3.dylib \
+		native/raw/osx-x64/onnxruntime/lib/libvoicevox_onnxruntime.1.17.3.dylib \
 		-output $@
+	install_name_tool -change "@rpath/libvoicevox_onnxruntime.1.17.3.dylib" "@rpath/libvoicevox_onnxruntime.framework/voicevox_onnxruntime" $@
 
-native/fat_onnxruntime.xcframework: native/onnxruntime-osx/libonnxruntime.1.14.0.dylib native/onnxruntime.xcframework
+native/raw/voicevox_onnxruntime.xcframework: native/tmp/voicevox_onnxruntime-ios-xcframework.zip
+	unzip -o $< -d native/raw
+
+native/tmp/osx/voicevox_onnxruntime.framework: native/tmp/osx-arm64_x86_64/voicevox_onnxruntime
+	mkdir -p $(dir $@)
+	cp -r FrameworkTemplate/voicevox_onnxruntime.framework $@
+	cp native/tmp/osx-arm64_x86_64/voicevox_onnxruntime $@/voicevox_onnxruntime
+
+native/voicevox_onnxruntime.xcframework: native/tmp/osx/voicevox_onnxruntime.framework native/tmp/osx/voicevox_onnxruntime.framework
 	xcodebuild -create-xcframework \
-		-library native/onnxruntime-osx/libonnxruntime.1.14.0.dylib \
-		-library native/onnxruntime.xcframework/ios-arm64/libonnxruntime.1.14.1.dylib \
-		-library native/onnxruntime.xcframework/ios-arm64_x86_64-simulator/libonnxruntime.1.14.1.dylib \
+		-framework native/raw/voicevox_onnxruntime.xcframework/ios-arm64/voicevox_onnxruntime.framework \
+		-framework native/raw/voicevox_onnxruntime.xcframework/ios-arm64_x86_64-simulator/voicevox_onnxruntime.framework \
+		-framework native/tmp/osx/voicevox_onnxruntime.framework \
 		-output $@
-
-# otool -L native/voicevox_core.xcframework/ios-arm64/libvoicevox_core.dylib をすると、1.14.0 が参照されているので、書き換える
-patch/voicevox_core: native/voicevox_core.xcframework
-	install_name_tool -change "@rpath/libonnxruntime.1.14.0.dylib" "@rpath/libonnxruntime.1.14.1.dylib" $</ios-arm64/libvoicevox_core.dylib
-	install_name_tool -change "@rpath/libonnxruntime.1.14.0.dylib" "@rpath/libonnxruntime.1.14.1.dylib" $</ios-arm64_x86_64-simulator/libvoicevox_core.dylib
 
 xcode/swiftpm:
 	xed .

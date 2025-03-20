@@ -2,3 +2,10 @@ native/*
 !native/.gitkeep
 xcuserdata
 .build
+
+!Sources/AppCore/Resources/.gitkeep
+# 他に必要なファイルあるかもしれないし、ディレクトリを除外みたいのは一旦やらない
+Sources/AppCore/Resources/models.json
+
+# from package
+FrameworkTemplate/voicevox_core.framework/Headers/voicevox_core.h

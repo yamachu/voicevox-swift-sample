@@ -1,14 +1,14 @@
 # Voicevox Swift Sample
 
-[voicevox_core 0.15.0-preview.16](https://github.com/VOICEVOX/voicevox_core/releases/tag/0.15.0-preview.16) を Swift から利用するサンプルプロジェクト。
-音声合成などは行わず、一旦リンクが出来て voicevox_core から提供されている関数が呼び出せるかを確認できるかどうかにフォーカスしている。
+[voicevox_core 0.16.0-preview.1](https://github.com/VOICEVOX/voicevox_core/releases/tag/0.16.0-preview.1) を Swift から利用するサンプルプロジェクト。
+iOS と macOS の両方で動作する。
 
 ## 使用ライブラリ
 
-- [VOICEVOX/onnxruntime_builder 1.14.1](https://github.com/VOICEVOX/onnxruntime-builder/releases/tag/1.14.1)
-  - Pods などでダウンロードできる onnxruntime は StaticLibrary の形式になっているが、DynamicLibrary が voicevox core から利用するために必要であるため、カスタムされた onnxruntime を利用している。
-- [VOICEVOX/voicevox_core 0.15.0-preview.16](https://github.com/VOICEVOX/voicevox_core/releases/tag/0.15.0-preview.16)
-  - 音声合成エンジン本体。iOS 向けのビルドがあるなかでの最新。
+- [VOICEVOX/onnxruntime_builder voicevox_onnxruntime-1.17.3](https://github.com/VOICEVOX/onnxruntime-builder/releases/tag/voicevox_onnxruntime-1.17.3)
+  - Voicevox向けにカスタマイズされた ONNX Runtime。その中でも本番 VVM （提供されている Voicevox で使用出来る音声モデル）が利用できるようにビルドされたもの。
+- [VOICEVOX/voicevox_core 0.16.0-preview.1](https://github.com/VOICEVOX/voicevox_core/releases/tag/0.16.0-preview.1)
+  - 音声合成エンジン本体。
 
 ## ビルド
 
