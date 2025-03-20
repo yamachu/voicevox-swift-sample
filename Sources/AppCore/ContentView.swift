@@ -20,6 +20,8 @@ public struct ContentView: View {
                 .environmentObject(voicevoxEnvironmentObject)
             VoiceModelsView()
                 .environmentObject(voicevoxEnvironmentObject)
+            SpeechSynthesisView()
+                .environmentObject(voicevoxEnvironmentObject)
         }
         .padding()
     }
