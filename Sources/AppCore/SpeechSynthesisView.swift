@@ -67,8 +67,18 @@ struct SpeechSynthesisView: View {
         #if os(iOS)
             let onnxResult = voicevox_onnxruntime_init_once(&onnxruntime)
         #else
+            var option = voicevox_make_default_load_onnxruntime_options()
+            // アプリケーションとしてビルドした際、~.app/Contents/Frameworks/voicevox_onnxruntime.framework/voicevox_onnxruntime にvoicevox_onnxruntime が配置される
+            // しかし、voicevox_core内部でdlopenする際にFrameworks以下は探索しないため、絶対パスを指定している
+            let filename =
+                Bundle.main.bundlePath
+                + "/Contents/Frameworks/voicevox_onnxruntime.framework/voicevox_onnxruntime"
+            let cString = strdup(filename)
+            defer { free(cString) }
+            option.filename = UnsafePointer(cString)
+
             let onnxResult = voicevox_onnxruntime_load_once(
-                voicevox_make_default_load_onnxruntime_options(), &onnxruntime)
+                option, &onnxruntime)
         #endif
         guard onnxResult.magnitude == VOICEVOX_RESULT_OK.rawValue, onnxruntime != nil else {
             print(
