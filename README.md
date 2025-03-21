@@ -9,6 +9,8 @@ iOS と macOS の両方で動作する。
   - Voicevox向けにカスタマイズされた ONNX Runtime。その中でも本番 VVM （提供されている Voicevox で使用出来る音声モデル）が利用できるようにビルドされたもの。
 - [VOICEVOX/voicevox_core 0.16.0-preview.1](https://github.com/VOICEVOX/voicevox_core/releases/tag/0.16.0-preview.1)
   - 音声合成エンジン本体。
+- [VoicevoxCoreSwift](https://github.com/yamachu/VoicevoxCoreSwift)
+  - voicevox_core を Swift から利用するためのラッパーライブラリ。
 
 ## ビルド
 
