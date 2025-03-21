@@ -14,13 +14,14 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "AppCore",
-            targets: ["AppCore"]),
+            targets: ["AppCore"])
     ],
     dependencies: [
         .package(path: String("NativeLibrary/VoicevoxCore")),
         .package(path: String("NativeLibrary/VoicevoxOnnxruntime")),
         .package(url: "https://github.com/mw99/DataCompression.git", from: "3.8.0"),
         .package(url: "https://github.com/kayembi/Tarscape.git", branch: "main"),
+        .package(url: "https://github.com/yamachu/VoicevoxCoreSwift.git", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -31,7 +32,8 @@ let package = Package(
                 "VoicevoxCore",
                 "VoicevoxOnnxruntime",
                 "DataCompression",
-                "Tarscape"
+                "Tarscape",
+                "VoicevoxCoreSwift",
             ],
             resources: [
                 .process("Resources/models.json")

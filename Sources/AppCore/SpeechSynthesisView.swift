@@ -1,6 +1,6 @@
 import AVFoundation
 import SwiftUI
-import voicevox_core
+import VoicevoxCoreSwift
 
 struct SpeechSynthesisView: View {
     @EnvironmentObject var voicevoxEnvironment: VoicevoxEnvironmentObject
@@ -53,116 +53,65 @@ struct SpeechSynthesisView: View {
         let styleId = model.styleId
 
         // 1. OpenJTalk辞書の初期化
-        var openJtalk: OpaquePointer? = nil
-        let openJtalkResult = voicevox_open_jtalk_rc_new(dictPath.path, &openJtalk)
-        guard openJtalkResult.magnitude == VOICEVOX_RESULT_OK.rawValue, openJtalk != nil else {
-            print(
-                "Failed to initialize OpenJTalk: \(voicevox_error_result_to_message(openJtalkResult))"
-            )
+        let openJtalk = try? OpenJtalkRc.New(openJtalkDicDir: dictPath.path)
+        guard let openJtalk = openJtalk else {
+            print("Failed to initialize OpenJTalk")
             return
         }
-
         // 2. ONNX Runtimeの初期化
-        var onnxruntime: OpaquePointer? = nil
         #if os(iOS)
-            let onnxResult = voicevox_onnxruntime_init_once(&onnxruntime)
+            let onnxruntime = try? Onnxruntime.InitOnce()
         #else
-            var option = voicevox_make_default_load_onnxruntime_options()
+            var option = LoadOnnxruntimeOptions.defaultOptions()
+
             // アプリケーションとしてビルドした際、~.app/Contents/Frameworks/voicevox_onnxruntime.framework/voicevox_onnxruntime にvoicevox_onnxruntime が配置される
             // しかし、voicevox_core内部でdlopenする際にFrameworks以下は探索しないため、絶対パスを指定している
             let filename =
                 Bundle.main.bundlePath
                 + "/Contents/Frameworks/voicevox_onnxruntime.framework/voicevox_onnxruntime"
-            let cString = strdup(filename)
-            defer { free(cString) }
-            option.filename = UnsafePointer(cString)
-
-            let onnxResult = voicevox_onnxruntime_load_once(
-                option, &onnxruntime)
+            option.filename = filename
+            let onnxruntime = try? Onnxruntime.LoadOnce(options: option)
         #endif
-        guard onnxResult.magnitude == VOICEVOX_RESULT_OK.rawValue, onnxruntime != nil else {
-            print(
-                "Failed to initialize ONNX Runtime: \(voicevox_error_result_to_message(onnxResult))"
-            )
-            voicevox_open_jtalk_rc_delete(openJtalk)
+        guard let onnxruntime = onnxruntime else {
+            print("Failed to initialize Onnxruntime")
             return
         }
 
         // 3. Synthesizerの初期化
-        var synthesizer: OpaquePointer? = nil
-        var initializeOptions = voicevox_make_default_initialize_options()
-        let synthesizerResult = voicevox_synthesizer_new(
-            onnxruntime, openJtalk, initializeOptions, &synthesizer)
-        guard synthesizerResult.magnitude == VOICEVOX_RESULT_OK.rawValue, synthesizer != nil else {
-            print(
-                "Failed to initialize Synthesizer: \(voicevox_error_result_to_message(synthesizerResult))"
-            )
-            voicevox_open_jtalk_rc_delete(openJtalk)
+        var initializeOptions = InitializeOptions.defaultOptions()
+        let synthesizer = try? Synthesizer.New(
+            onnxruntime: onnxruntime, openJtalk: openJtalk, options: initializeOptions)
+        guard let synthesizer = synthesizer else {
+            print("Failed to initialize Synthesizer")
             return
         }
 
         // 4. 音声モデルの読み込み
-        var voiceModel: OpaquePointer? = nil
-        var modelResult = voicevox_voice_model_file_open(
-            modelPath.standardizedFileURL.path, &voiceModel)
-        guard modelResult.magnitude == VOICEVOX_RESULT_OK.rawValue, voiceModel != nil else {
-            print("Failed to load voice model: \(voicevox_error_result_to_message(modelResult))")
-            voicevox_synthesizer_delete(synthesizer)
-            voicevox_open_jtalk_rc_delete(openJtalk)
+        let voiceModel = try? VoicevoxCoreSwift.VoiceModel.open(
+            path: modelPath.standardizedFileURL.path)
+        guard let voiceModel = voiceModel else {
+            print("Failed to open voice model")
             return
         }
 
         // NOTE: Debug executableしてる状態で、かつVoicevoxOnnxruntimeを使用しているとクラッシュする
-        let loadModelResult = voicevox_synthesizer_load_voice_model(synthesizer, voiceModel)
-        guard loadModelResult.magnitude == VOICEVOX_RESULT_OK.rawValue else {
-            print(
-                "Failed to load voice model into synthesizer: \(voicevox_error_result_to_message(loadModelResult))"
-            )
-            voicevox_voice_model_file_delete(voiceModel)
-            voicevox_synthesizer_delete(synthesizer)
-            voicevox_open_jtalk_rc_delete(openJtalk)
-            return
-        }
-
-        // FIXME: 型いい感じにしたい
-        var modelId:
-            (
-                UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
-                UInt8, UInt8, UInt8, UInt8
-            ) = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-        voicevox_voice_model_file_id(voiceModel, &modelId)
+        try? synthesizer.loadVoiceModel(model: voiceModel)
 
         // 5. TTSの実行
-        var wavLength: UInt = 0
-        var wavData: UnsafeMutablePointer<UInt8>? = nil
-        var ttsOptions = voicevox_make_default_tts_options()
-        let ttsResult = voicevox_synthesizer_tts(
-            synthesizer, text, UInt32(styleId), ttsOptions, &wavLength, &wavData)
-        guard ttsResult.magnitude == VOICEVOX_RESULT_OK.rawValue, let wavData = wavData else {
-            print("Failed to synthesize speech: \(voicevox_error_result_to_message(ttsResult))")
-            voicevox_synthesizer_unload_voice_model(synthesizer, &modelId)
-            voicevox_voice_model_file_delete(voiceModel)
-            voicevox_synthesizer_delete(synthesizer)
-            voicevox_open_jtalk_rc_delete(openJtalk)
+        var ttsOptions = TtsOptions.defaultOptions()
+        let data = try? synthesizer.tts(text: text, styleId: UInt32(styleId), options: ttsOptions)
+        guard let wavData = data else {
+            print("Failed to synthesize speech")
             return
         }
 
-        let wavBuffer = Data(bytes: wavData, count: Int(wavLength))
-
         do {
-            audioPlayer = try AVAudioPlayer(data: wavBuffer)
+            audioPlayer = try AVAudioPlayer(data: wavData)
             audioPlayer?.prepareToPlay()
             audioPlayer?.play()
         } catch {
             print("Failed to play WAV data: \(error.localizedDescription)")
         }
-
-        // 6. リソースの解放
-        voicevox_wav_free(wavData)
-        voicevox_synthesizer_unload_voice_model(synthesizer, &modelId)
-        voicevox_voice_model_file_delete(voiceModel)
-        voicevox_synthesizer_delete(synthesizer)
-        voicevox_open_jtalk_rc_delete(openJtalk)
 
         return
     }
