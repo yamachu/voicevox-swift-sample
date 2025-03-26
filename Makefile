@@ -71,7 +71,7 @@ native/tmp/osx/voicevox_onnxruntime.framework: native/tmp/osx-arm64_x86_64/voice
 	cp -r FrameworkTemplate/voicevox_onnxruntime.framework $@
 	cp native/tmp/osx-arm64_x86_64/voicevox_onnxruntime $@/voicevox_onnxruntime
 
-native/voicevox_onnxruntime.xcframework: native/tmp/osx/voicevox_onnxruntime.framework
+native/voicevox_onnxruntime.xcframework: native/tmp/osx/voicevox_onnxruntime.framework native/raw/voicevox_onnxruntime.xcframework
 	xcodebuild -create-xcframework \
 		-framework native/raw/voicevox_onnxruntime.xcframework/ios-arm64/voicevox_onnxruntime.framework \
 		-framework native/raw/voicevox_onnxruntime.xcframework/ios-arm64_x86_64-simulator/voicevox_onnxruntime.framework \
