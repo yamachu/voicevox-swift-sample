@@ -67,17 +67,26 @@ native/tmp/osx-arm64_x86_64/voicevox_onnxruntime: native/raw/osx-arm64 native/ra
 native/raw/voicevox_onnxruntime.xcframework: native/tmp/voicevox_onnxruntime-ios-xcframework.zip
 	unzip -o $< -d native/raw
 
+# macOS の framework は versioned bundle (Versions/A + シンボリックリンク) にする必要がある。
+# xcodebuild -create-xcframework はこの構造を維持できないため手動で組み立てる。
 native/tmp/osx/voicevox_onnxruntime.framework: native/tmp/osx-arm64_x86_64/voicevox_onnxruntime
-	mkdir -p $(dir $@)
-	cp -r FrameworkTemplate/voicevox_onnxruntime.framework $@
-	cp native/tmp/osx-arm64_x86_64/voicevox_onnxruntime $@/voicevox_onnxruntime
+	rm -rf $@
+	mkdir -p $@/Versions/A/Modules $@/Versions/A/Resources
+	cp FrameworkTemplate/voicevox_onnxruntime.framework/Modules/module.modulemap $@/Versions/A/Modules/module.modulemap
+	cp FrameworkTemplate/voicevox_onnxruntime.framework/Info.plist $@/Versions/A/Resources/Info.plist
+	cp native/tmp/osx-arm64_x86_64/voicevox_onnxruntime $@/Versions/A/voicevox_onnxruntime
+	ln -s ./A $@/Versions/Current
+	ln -s ./Versions/A/Modules $@/Modules
+	ln -s ./Versions/A/Resources $@/Resources
+	ln -s ./Versions/A/voicevox_onnxruntime $@/voicevox_onnxruntime
 
 native/voicevox_onnxruntime.xcframework: native/tmp/osx/voicevox_onnxruntime.framework native/raw/voicevox_onnxruntime.xcframework
-	xcodebuild -create-xcframework \
-		-framework native/raw/voicevox_onnxruntime.xcframework/ios-arm64/voicevox_onnxruntime.framework \
-		-framework native/raw/voicevox_onnxruntime.xcframework/ios-arm64_x86_64-simulator/voicevox_onnxruntime.framework \
-		-framework native/tmp/osx/voicevox_onnxruntime.framework \
-		-output $@
+	rm -rf $@
+	mkdir -p $@/ios-arm64 $@/ios-arm64_x86_64-simulator $@/macos-arm64_x86_64
+	cp -R native/raw/voicevox_onnxruntime.xcframework/ios-arm64/voicevox_onnxruntime.framework $@/ios-arm64/
+	cp -R native/raw/voicevox_onnxruntime.xcframework/ios-arm64_x86_64-simulator/voicevox_onnxruntime.framework $@/ios-arm64_x86_64-simulator/
+	cp -R native/tmp/osx/voicevox_onnxruntime.framework $@/macos-arm64_x86_64/
+	cp FrameworkTemplate/voicevox_onnxruntime.xcframework.Info.plist $@/Info.plist
 
 xcode/swiftpm:
 	xed .
