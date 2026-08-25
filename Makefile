@@ -1,11 +1,12 @@
 .PHONY: setup
-setup: native/voicevox_core.xcframework native/voicevox_onnxruntime.xcframework
+setup: native/voicevox_onnxruntime.xcframework
+#native/voicevox_core.xcframework # use SwiftPM version
 
 ARCH:=$(shell uname -m | grep -q 'x86_64' && echo "x64" || echo "arm64")
 DOWNLOADER:=native/bin/downloader
 
-CORE_TAG=0.16.0-preview.1
-ONNXRUNTIME_TAG=voicevox_onnxruntime-1.17.3
+CORE_TAG=0.17.0
+ONNXRUNTIME_TAG=1.23.2
 
 $(DOWNLOADER):
 	mkdir -p $(dir $@)
@@ -53,30 +54,39 @@ native/voicevox_core.xcframework: native/tmp/osx/voicevox_core.framework native/
 
 native/tmp/voicevox_onnxruntime-ios-xcframework.zip:
 	mkdir -p $(dir $@)
-	curl https://github.com/VOICEVOX/onnxruntime-builder/releases/download/$(ONNXRUNTIME_TAG)/voicevox_onnxruntime-ios-xcframework-1.17.3.zip -L -o $@
+	curl https://github.com/VOICEVOX/onnxruntime-builder/releases/download/voicevox_onnxruntime-$(ONNXRUNTIME_TAG)/voicevox_onnxruntime-ios-xcframework-$(ONNXRUNTIME_TAG).zip -L -o $@
 
 native/tmp/osx-arm64_x86_64/voicevox_onnxruntime: native/raw/osx-arm64 native/raw/osx-x64
 	mkdir -p $(dir $@)
 	lipo -create \
-		native/raw/osx-arm64/onnxruntime/lib/libvoicevox_onnxruntime.1.17.3.dylib \
-		native/raw/osx-x64/onnxruntime/lib/libvoicevox_onnxruntime.1.17.3.dylib \
+		native/raw/osx-arm64/onnxruntime/lib/libvoicevox_onnxruntime.$(ONNXRUNTIME_TAG).dylib \
+		native/raw/osx-x64/onnxruntime/lib/libvoicevox_onnxruntime.$(ONNXRUNTIME_TAG).dylib \
 		-output $@
 	install_name_tool -id "@rpath/voicevox_onnxruntime.framework/voicevox_onnxruntime" $@
 
 native/raw/voicevox_onnxruntime.xcframework: native/tmp/voicevox_onnxruntime-ios-xcframework.zip
 	unzip -o $< -d native/raw
 
+# macOS の framework は versioned bundle (Versions/A + シンボリックリンク) にする必要がある。
+# xcodebuild -create-xcframework はこの構造を維持できないため手動で組み立てる。
 native/tmp/osx/voicevox_onnxruntime.framework: native/tmp/osx-arm64_x86_64/voicevox_onnxruntime
-	mkdir -p $(dir $@)
-	cp -r FrameworkTemplate/voicevox_onnxruntime.framework $@
-	cp native/tmp/osx-arm64_x86_64/voicevox_onnxruntime $@/voicevox_onnxruntime
+	rm -rf $@
+	mkdir -p $@/Versions/A/Modules $@/Versions/A/Resources
+	cp FrameworkTemplate/voicevox_onnxruntime.framework/Modules/module.modulemap $@/Versions/A/Modules/module.modulemap
+	cp FrameworkTemplate/voicevox_onnxruntime.framework/Info.plist $@/Versions/A/Resources/Info.plist
+	cp native/tmp/osx-arm64_x86_64/voicevox_onnxruntime $@/Versions/A/voicevox_onnxruntime
+	ln -s ./A $@/Versions/Current
+	ln -s ./Versions/A/Modules $@/Modules
+	ln -s ./Versions/A/Resources $@/Resources
+	ln -s ./Versions/A/voicevox_onnxruntime $@/voicevox_onnxruntime
 
 native/voicevox_onnxruntime.xcframework: native/tmp/osx/voicevox_onnxruntime.framework native/raw/voicevox_onnxruntime.xcframework
-	xcodebuild -create-xcframework \
-		-framework native/raw/voicevox_onnxruntime.xcframework/ios-arm64/voicevox_onnxruntime.framework \
-		-framework native/raw/voicevox_onnxruntime.xcframework/ios-arm64_x86_64-simulator/voicevox_onnxruntime.framework \
-		-framework native/tmp/osx/voicevox_onnxruntime.framework \
-		-output $@
+	rm -rf $@
+	mkdir -p $@/ios-arm64 $@/ios-arm64_x86_64-simulator $@/macos-arm64_x86_64
+	cp -R native/raw/voicevox_onnxruntime.xcframework/ios-arm64/voicevox_onnxruntime.framework $@/ios-arm64/
+	cp -R native/raw/voicevox_onnxruntime.xcframework/ios-arm64_x86_64-simulator/voicevox_onnxruntime.framework $@/ios-arm64_x86_64-simulator/
+	cp -R native/tmp/osx/voicevox_onnxruntime.framework $@/macos-arm64_x86_64/
+	cp FrameworkTemplate/voicevox_onnxruntime.xcframework.Info.plist $@/Info.plist
 
 xcode/swiftpm:
 	xed .
