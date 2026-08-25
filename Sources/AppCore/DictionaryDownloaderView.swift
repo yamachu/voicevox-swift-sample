@@ -59,7 +59,7 @@ struct DictionaryDownloaderView: View {
         guard
             let url = URL(
                 string:
-                    "https://jaist.dl.sourceforge.net/project/open-jtalk/Dictionary/open_jtalk_dic-1.11/open_jtalk_dic_utf_8-1.11.tar.gz"
+                    "https://github.com/r9y9/open_jtalk/releases/download/v1.11.1/open_jtalk_dic_utf_8-1.11.tar.gz"
             )
         else {
             isDownloading = false
