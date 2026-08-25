@@ -14,7 +14,29 @@ iOS と macOS の両方で動作する。
 - [VoicevoxCoreSwiftPM](https://github.com/yamachu/VoicevoxCoreSwiftPM)
   - voicevox_core の xcframework を SwiftPM から利用するためのパッケージ。
 
-## ビルド
+## ビルド・実行
+
+### 最短手順
+
+1. 音声モデル（`.vvm`）を用意する。
+2. 音声モデルの一覧を生成する。
+3. 依存ライブラリを準備して、Xcodeで起動する。
+
+```sh
+# .vvm ファイルを置くディレクトリ（任意のパスでよい）
+$ mkdir -p scripts/models
+
+# 例: scripts/models/0.vvm
+# .vvm ファイルは VOICEVOX/voicevox_vvm から取得する
+
+$ ./scripts/generate_models_json.sh scripts/models \
+    > Sources/AppCore/Resources/models.json
+$ make setup
+$ make xcode
+```
+
+`models.json`はGit管理対象外です。`.vvm`を追加・変更した場合は、
+`generate_models_json.sh`を再実行して一覧を更新してください。
 
 ### 事前準備
 
