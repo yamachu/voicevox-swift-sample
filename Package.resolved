@@ -1,5 +1,5 @@
 {
-  "originHash" : "498072bca96d9f0cce103cf0c60c9ee0431606b6209ae3ace2759a884d0d6d48",
+  "originHash" : "8271630c894b15ff2e9ca31ffc29000338b88aecf22182412d3b720a10217da6",
   "pins" : [
     {
       "identity" : "datacompression",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/yamachu/VoicevoxCoreSwift.git",
       "state" : {
-        "branch" : "support-0.17.0",
-        "revision" : "3b03358939468437e1c2649c406830a66b3b6b4e"
+        "revision" : "44615ec912e520cc377fa24bad5fd3b2e68fb03f",
+        "version" : "0.17.0"
       }
     },
     {

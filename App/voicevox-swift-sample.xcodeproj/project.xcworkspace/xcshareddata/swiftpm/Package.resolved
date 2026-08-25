@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/yamachu/VoicevoxCoreSwift.git",
       "state" : {
-        "branch" : "support-0.17.0",
-        "revision" : "3b03358939468437e1c2649c406830a66b3b6b4e"
+        "revision" : "44615ec912e520cc377fa24bad5fd3b2e68fb03f",
+        "version" : "0.17.0"
       }
     },
     {
