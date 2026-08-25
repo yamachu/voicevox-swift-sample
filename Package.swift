@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "AppCore",
     platforms: [
-        .iOS(.v15),
+        .iOS(.v16),
         .macOS(.v15),
         .macCatalyst(.v15),
     ],
@@ -17,11 +17,11 @@ let package = Package(
             targets: ["AppCore"])
     ],
     dependencies: [
-        .package(path: String("NativeLibrary/VoicevoxCore")),
         .package(path: String("NativeLibrary/VoicevoxOnnxruntime")),
         .package(url: "https://github.com/mw99/DataCompression.git", from: "3.8.0"),
         .package(url: "https://github.com/kayembi/Tarscape.git", branch: "main"),
-        .package(url: "https://github.com/yamachu/VoicevoxCoreSwift.git", branch: "main"),
+        .package(url: "https://github.com/yamachu/VoicevoxCoreSwift.git", branch: "support-0.17.0"),
+        .package(url: "https://github.com/yamachu/VoicevoxCoreSwiftPM.git", from: "0.17.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -29,7 +29,7 @@ let package = Package(
         .target(
             name: "AppCore",
             dependencies: [
-                "VoicevoxCore",
+                .product(name: "VoicevoxCore", package: "voicevoxcoreswiftpm"),
                 "VoicevoxOnnxruntime",
                 "DataCompression",
                 "Tarscape",
